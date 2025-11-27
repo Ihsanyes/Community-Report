@@ -22,9 +22,10 @@
         <div class="collapse navbar-collapse" id="navbarsMain">
             <ul class="navbar-nav ms-auto">
                 {% if request.user.is_authenticated %}
-                    <li class="nav-item"><a class="nav-link" href="#">Hello, {{ request.user.username }}</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/">Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">{{ request.user.username }}</a></li>
                     <a href="/logout/" class="btn btn-outline-secondary py-2 px-3">Logout</a>
-                    <li class="nav-item"><a class="nav-link" href="/home/">Dashboard</a></li>
                 {% else %}
                     <li class="nav-item"><a class="nav-link" href="/signup/">Sign up</a></li>
                     <li class="nav-item"><a class="nav-link" href="/login/">Log in</a></li>
@@ -40,9 +41,9 @@
         <p class="lead text-muted">Share knowledge, ask questions, and help others build better solutions.</p>
         <p>
             {% if request.user.is_authenticated %}
-                <a href="#" class="btn btn-primary btn-lg">Create a post</a>
+                <a href="/report-issue/" class="btn btn-primary btn-lg">Report Issue</a>
             {% else %}
-                <a href="/signup/" class="btn btn-primary btn-lg me-2">Get Started</a>
+                <a href="/signup/" class="btn btn-primary btn-lg me-2">Report Issue</a>
                 <a href="/login/" class="btn btn-outline-secondary btn-lg">Log in</a>
             {% endif %}
         </p>
