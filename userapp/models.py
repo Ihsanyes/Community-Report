@@ -7,7 +7,6 @@ class CustomUser(AbstractUser):
 	def __str__(self):
 		return self.username
 
-
 class IssueReport(models.Model):
 
     CHOICE = [
@@ -20,8 +19,6 @@ class IssueReport(models.Model):
 
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
 
-    issue_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
-
     title = models.CharField(max_length=200)
     category = models.CharField(max_length=100, choices=CHOICE, null=True, blank=True)
 
@@ -33,8 +30,9 @@ class IssueReport(models.Model):
     city = models.CharField(max_length=100, null=True, blank=True)
     landmark = models.CharField(max_length=255, null=True, blank=True)
 
-    status = models.CharField(max_length=50, default='Open')
-    reported_at = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=50,
+                              choices=[('Open', 'Open'), ('In Progress', 'In Progress'), ('Closed', 'Closed')],
+                             default='Open')
     description = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
