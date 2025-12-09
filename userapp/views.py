@@ -1,7 +1,8 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth import login, authenticate,logout
 from django.contrib import messages
 from .models import CustomUser, IssueReport
+from .permission import login_required, admin_required
 
 def signup(request):
     if request.method == "POST":
@@ -64,15 +65,19 @@ def login_view(request):
                 messages.error(request, "Invalid username or password")
     return render(request, "userapp/login.html")
 
+
+@login_required
 def logout_view(request):
     logout(request)
     messages.success(request, "Logged out successfully!")
     return redirect('/login/')
 
+
 def home(request):
     #oakgdpfokgaodkg
     return render(request, 'userapp/home.html')
 
+@login_required
 def report_issue(request):
     if request.method == 'POST':
         title = request.POST.get('title')
@@ -125,7 +130,7 @@ def report_issue(request):
 
         if create:
             messages.success(request, "Issue reported successfully!")
-            return redirect('/admin-dashboard/')
+            return redirect('/issue-success/')
 
 
 
@@ -133,6 +138,8 @@ def report_issue(request):
         
     return render(request, 'userapp/report_issue.html')
 
+@login_required
+@admin_required
 def admin_dashboard(request):
     issues = IssueReport.objects.all()
 
@@ -154,3 +161,31 @@ def admin_dashboard(request):
     }
 
     return render(request, 'userapp/admin_dashboard.html', context)
+
+
+# ✅ ISSUE DETAIL PAGE
+@login_required
+@admin_required
+def issue_detail(request, id):
+    issue = get_object_or_404(IssueReport, id=id)
+
+    return render(request, "userapp/issue_detail.html", {
+        "issue": issue
+    })
+
+# ✅ STATUS UPDATE (ADMIN ONLY)
+@login_required
+@admin_required
+def update_issue_status(request, id):
+    if request.method == "POST":
+        issue = get_object_or_404(IssueReport, id=id)
+        new_status = request.POST.get("status")
+
+        if new_status in ["Open", "In Progress", "Closed"]:
+            issue.status = new_status
+            issue.save()
+
+        return redirect(f"/issue/{id}/")
+    
+def issue_success(request):
+    return render(request, "userapp/issue_success.html")
