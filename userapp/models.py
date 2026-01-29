@@ -21,11 +21,11 @@ class CustomUser(AbstractUser):
 class IssueReport(models.Model):
 
     CHOICE = [
-        ('road issue','Road Issue'),
-        ('water supply','Water Supply'),
-        ('electricity','Electricity'),
-        ('sanitation','Sanitation'),
-        ('other','Other'),
+        ('pwd', 'Road Issue / PWD'),
+        ('water', 'Water Authority'),
+        ('kseb', 'Electricity / KSEB'),
+        ('police', 'Police Station'),
+        ('other', 'Other'),
     ]
 
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
@@ -45,6 +45,8 @@ class IssueReport(models.Model):
                               choices=[('Open', 'Open'), ('In Progress', 'In Progress'), ('Closed', 'Closed')],
                              default='Open')
     description = models.TextField()
+    image = models.ImageField(upload_to='issue_images/', blank=True, null=True)
+
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

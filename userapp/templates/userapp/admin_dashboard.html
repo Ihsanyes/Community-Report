@@ -1,193 +1,360 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Admin Dashboard</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Admin Dashboard - Community</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Outfit:wght@700&display=swap"
+        rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- PWA Support -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#1e3a8a">
+    <link rel="apple-touch-icon" href="/static/logo.png">
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --secondary: #3b82f6;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --white: #ffffff;
+            --font-main: 'Inter', sans-serif;
+            --font-heading: 'Outfit', sans-serif;
+        }
 
-<style>
-    body { background: #f5f7fb; }
+        body {
+            font-family: var(--font-main);
+            color: var(--dark);
+            background-color: var(--light);
+            min-height: 100vh;
+            margin: 0;
+        }
 
-    .dashboard-card {
-        border-radius: 12px;
-        padding: 20px;
-        color: white;
-        min-height: 120px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        text-align: center;
-    }
+        .dashboard-container {
+            padding: 40px 0;
+        }
 
-    .card-open { background: #0d6efd; }
-    .card-progress { background: #ff9800; }
-    .card-closed { background: #28a745; }
+        .navbar {
+            padding: 1.5rem 0;
+            background: white !important;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
 
-    .table th, .table td {
-        vertical-align: middle;
-        font-size: 15px;
-    }
+        .navbar-brand {
+            font-family: var(--font-heading);
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--primary) !important;
+        }
 
-    .badge {
-        font-size: 12px;
-        padding: 6px 10px;
-    }
-</style>
+        .nav-link {
+            font-weight: 600;
+            color: var(--dark) !important;
+            transition: 0.3s;
+        }
+
+        .page-header {
+            margin-bottom: 2.5rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 24px;
+            padding: 1.5rem;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+            transition: transform 0.3s;
+            height: 100%;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        .bg-open {
+            background: rgba(30, 58, 138, 0.1);
+            color: var(--primary);
+        }
+
+        .bg-progress {
+            background: rgba(255, 152, 0, 0.1);
+            color: #f57c00;
+        }
+
+        .bg-closed {
+            background: rgba(40, 167, 69, 0.1);
+            color: #1e7e34;
+        }
+
+        .bg-total {
+            background: rgba(100, 116, 139, 0.1);
+            color: #475569;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            font-family: var(--font-heading);
+            margin-top: 0.5rem;
+        }
+
+        .content-card {
+            background: white;
+            border-radius: 24px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+            overflow: hidden;
+        }
+
+        .table> :not(caption)>*>* {
+            padding: 1.25rem 1.5rem;
+        }
+
+        .badge-premium {
+            padding: 8px 16px;
+            border-radius: 100px;
+            font-weight: 700;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+        }
+
+        .filter-bar {
+            background: white;
+            border-radius: 100px;
+            padding: 0.75rem 1.5rem;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+
+        .form-select-premium {
+            border: none;
+            font-weight: 600;
+            color: var(--primary);
+            cursor: pointer;
+            padding-right: 2rem;
+        }
+
+        .form-select-premium:focus {
+            box-shadow: none;
+        }
+    </style>
 </head>
 
 <body>
-
-<nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
-    <div class="container">
-        <a class="navbar-brand" href="/">Community</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsMain" aria-controls="navbarsMain" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <div class="collapse navbar-collapse" id="navbarsMain">
-            <ul class="navbar-nav ms-auto">
-                {% if request.user.is_authenticated %}
+    <nav class="navbar navbar-expand-lg sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="/">COMMUNITY<span>.</span></a>
+            <div class="collapse navbar-collapse" id="navMain">
+                <ul class="navbar-nav ms-auto align-items-center">
                     <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
-                    {% if request.user.is_staff or request.user.is_superuser%}
-                    <li class="nav-item"><a class="nav-link" href="/admin-dashboard/">Dashboard</a></li>
-                    {% endif %}
-                    <li class="nav-item"><a class="nav-link" href="#">{{ request.user.username }}</a></li>
-                    <a href="/logout/" class="btn btn-outline-secondary py-2 px-3">Logout</a>
-                {% else %}
-                    <li class="nav-item"><a class="nav-link" href="/signup/">Sign up</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/login/">Log in</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="/admin-dashboard/">Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/profile/">{{ request.user.username }}</a></li>
+                    <li class="nav-item ms-lg-3"><a href="/logout/"
+                            class="btn btn-sm btn-outline-danger px-4 py-2 rounded-pill">Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="dashboard-container">
+        <div class="container">
+            <div class="page-header d-flex justify-content-between align-items-end">
+                <div>
+                    <h1 class="fw-bold h2 mb-1" style="font-family:var(--font-heading);">Admin Dashboard</h1>
+                    <p class="text-muted mb-0">{% if dept_name %}Managing {{ dept_name }}{% else %}All Department
+                        Overview{% endif %}</p>
+                </div>
+                <div class="text-end">
+                    <span class="text-muted small fw-bold text-uppercase">{{ now|date:"l, F d, Y" }}</span>
+                </div>
+            </div>
+
+            <div class="row g-4 mb-5">
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-icon bg-total">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                                <polyline points="10 9 9 9 8 9"></polyline>
+                            </svg>
+                        </div>
+                        <p class="stat-label mb-0">Total Reports</p>
+                        <h2 class="stat-value mb-0">{{ total }}</h2>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-icon bg-open">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                            </svg>
+                        </div>
+                        <p class="stat-label mb-0">Open Issues</p>
+                        <h2 class="stat-value mb-0 text-primary">{{ open_count }}</h2>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-icon bg-progress">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M12 2v4"></path>
+                                <path d="M12 18v4"></path>
+                                <path d="M4.93 4.93l2.83 2.83"></path>
+                                <path d="M16.24 16.24l2.83 2.83"></path>
+                                <path d="M2 12h4"></path>
+                                <path d="M18 12h4"></path>
+                                <path d="M4.93 19.07l2.83-2.83"></path>
+                                <path d="M16.24 7.76l2.83-2.83"></path>
+                            </svg>
+                        </div>
+                        <p class="stat-label mb-0">In Progress</p>
+                        <h2 class="stat-value mb-0 text-warning" style="color:#f57c00 !important;">{{ in_progress }}
+                        </h2>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-icon bg-closed">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                            </svg>
+                        </div>
+                        <p class="stat-label mb-0">Resolved</p>
+                        <h2 class="stat-value mb-0 text-success">{{ closed }}</h2>
+                    </div>
+                </div>
+            </div>
+
+            <form method="GET" class="filter-bar d-flex align-items-center gap-4">
+                {% if request.user.is_superuser %}
+                <div class="d-flex align-items-center gap-2">
+                    <span class="small fw-bold text-muted text-uppercase">Department:</span>
+                    <select name="category" class="form-select-premium" onchange="this.form.submit()">
+                        <option value="">All Categories</option>
+                        <option value="pwd" {% if request.GET.category == 'pwd' %}selected{% endif %}>Road Issue / PWD
+                        </option>
+                        <option value="water" {% if request.GET.category == 'water' %}selected{% endif %}>Water Authority
+                        </option>
+                        <option value="kseb" {% if request.GET.category == 'kseb' %}selected{% endif %}>Electricity / KSEB
+                        </option>
+                        <option value="police" {% if request.GET.category == 'police' %}selected{% endif %}>Police Station
+                        </option>
+                        <option value="other" {% if request.GET.category == 'other' %}selected{% endif %}>Other</option>
+                    </select>
+                </div>
                 {% endif %}
-            </ul>
-        </div>
-    </div>
-</nav>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="small fw-bold text-muted text-uppercase">Status:</span>
+                    <select name="status" class="form-select-premium" onchange="this.form.submit()">
+                        <option value="">All Statuses</option>
+                        <option value="Open" {% if request.GET.status == 'Open' %}selected{% endif %}>Open</option>
+                        <option value="In Progress" {% if request.GET.status == 'In Progress' %}selected{% endif %}>In
+                            Progress</option>
+                        <option value="Closed" {% if request.GET.status == 'Closed' %}selected{% endif %}>Closed</option>
+                    </select>
+                </div>
+            </form>
 
-<div class="container mt-4">
-
-    <h2 class="mb-4 fw-bold">Admin Dashboard</h2>
-
-    <!-- Summary Cards -->
-    <div class="row mb-4 g-3">
-
-        <div class="col-12 col-sm-6 col-lg-3">
-            <div class="dashboard-card card-open">
-                <h5>Total Issues</h5>
-                <h2>{{ total }}</h2>
+            <div class="content-card">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="ps-4">ISSUE ID</th>
+                                <th>TITLE / DESCRIPTION</th>
+                                <th>CATEGORY</th>
+                                <th>CITY</th>
+                                <th>STATUS</th>
+                                <th class="text-end pe-4">ACTION</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for issue in issues %}
+                            <tr>
+                                <td class="ps-4 fw-bold text-muted small">ID-{{ issue.id }}</td>
+                                <td>
+                                    <div class="fw-bold">{{ issue.title }}</div>
+                                    <div class="small text-muted">{{ issue.description }}</div>
+                                </td>
+                                <td><span class="fw-bold text-primary small">{{ issue.get_category_display }}</span>
+                                </td>
+                                <td class="small fw-semibold">{{ issue.city|default:"--" }}</td>
+                                <td>
+                                    <span
+                                        class="badge-premium {% if issue.status == 'Open' %}bg-open{% elif issue.status == 'In Progress' %}bg-progress{% else %}bg-closed{% endif %}">
+                                        {{ issue.status }}
+                                    </span>
+                                </td>
+                                <td class="text-end pe-4">
+                                    <a href="/issue/{{ issue.id }}"
+                                        class="btn btn-sm btn-dark rounded-pill px-4 py-2">View Case</a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center py-5">
+                                    <img src="https://cdn-icons-png.flaticon.com/512/7486/7486744.png" width="60"
+                                        class="opacity-25 mb-3">
+                                    <p class="text-muted mb-0">No issues matching your filters.</p>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
+    </main>
 
-        <div class="col-12 col-sm-6 col-lg-3">
-            <div class="dashboard-card card-progress">
-                <h5>Open</h5>
-                <h2>{{ open_count }}</h2>
-            </div>
-        </div>
-
-        <div class="col-12 col-sm-6 col-lg-3">
-            <div class="dashboard-card card-progress">
-                <h5>In Progress</h5>
-                <h2>{{ in_progress }}</h2>
-            </div>
-        </div>
-
-        <div class="col-12 col-sm-6 col-lg-3">
-            <div class="dashboard-card card-closed">
-                <h5>Closed</h5>
-                <h2>{{ closed }}</h2>
-            </div>
-        </div>
-
-    </div>
-
-    <!-- Filters -->
-    <form method="GET" class="row mb-4 g-3">
-
-        <div class="col-12 col-md-4">
-            <select name="category" class="form-select">
-                <option value="">Filter by Category</option>
-                <option value="road issue">Road Issue</option>
-                <option value="water supply">Water Supply</option>
-                <option value="electricity">Electricity</option>
-                <option value="sanitation">Sanitation</option>
-                <option value="other">Other</option>
-            </select>
-        </div>
-
-        <div class="col-12 col-md-4">
-            <select name="status" class="form-select">
-                <option value="">Filter by Status</option>
-                <option value="Open">Open</option>
-                <option value="In Progress">In Progress</option>
-                <option value="Closed">Closed</option>
-            </select>
-        </div>
-
-        <div class="col-12 col-md-4">
-            <button class="btn btn-primary w-100">Apply Filters</button>
-        </div>
-
-    </form>
-
-    <!-- Issues Table -->
-    <div class="card shadow-sm">
-        <div class="card-header bg-dark text-white">
-            <h5 class="mb-0">Reported Issues</h5>
-        </div>
-
-        <div class="table-responsive">
-        <table class="table table-bordered table-hover align-middle">
-            <thead class="table-light">
-                <tr>
-                    <th>Issue ID</th>
-                    <th>Title</th>
-                    <th>Category</th>
-                    <th>City</th>
-                    <th>Status</th>
-                    <th>Reported At</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-
-            <tbody>
-            {% for issue in issues %}
-                <tr>
-                    <td class="text-break">ISSUE-{{ issue.id }}</td>
-                    <td>{{ issue.title }}</td>
-                    <td>{{ issue.category }}</td>
-                    <td>{{ issue.city }}</td>
-
-                    <td>
-                        {% if issue.status == "Open" %}
-                            <span class="badge bg-primary">Open</span>
-                        {% elif issue.status == "In Progress" %}
-                            <span class="badge bg-warning text-dark">In Progress</span>
-                        {% else %}
-                            <span class="badge bg-success">Closed</span>
-                        {% endif %}
-                    </td>
-
-                    <td>{{ issue.created_at|date:"Y-m-d H:i" }}</td>
-
-                    <td>
-                        <a href="/issue/{{ issue.id }}" class="btn btn-sm btn-dark">View</a>
-                    </td>
-                </tr>
-            {% empty %}
-                <tr>
-                    <td colspan="7" class="text-center text-muted">No issues found</td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-        </div>
-    </div>
-
-</div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Register Service Worker for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').then(reg => {
+                    console.log('SW Registered!', reg);
+                }).catch(err => {
+                    console.log('SW Registration Failed!', err);
+                });
+            });
+        }
+    </script>
 </body>
+
 </html>

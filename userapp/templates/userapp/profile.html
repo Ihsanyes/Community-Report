@@ -1,0 +1,289 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ user.username }}'s Profile - Community</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Outfit:wght@700&display=swap"
+        rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- PWA Support -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#1e3a8a">
+    <link rel="apple-touch-icon" href="/static/logo.png">
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --secondary: #3b82f6;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --white: #ffffff;
+            --font-main: 'Inter', sans-serif;
+            --font-heading: 'Outfit', sans-serif;
+        }
+
+        body {
+            font-family: var(--font-main);
+            color: var(--dark);
+            background-color: var(--white);
+            overflow-x: hidden;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        .bg-curves {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .bg-shape-1 {
+            position: absolute;
+            top: -20%;
+            right: -10%;
+            width: 60%;
+            height: 120%;
+            background: linear-gradient(135deg, #1e3a8a, #1d4ed8);
+            border-radius: 40% 60% 30% 70% / 60% 30% 70% 40%;
+            opacity: 0.08;
+            animation: drift 20s infinite alternate ease-in-out;
+        }
+
+        .bg-shape-2 {
+            position: absolute;
+            bottom: -30%;
+            left: -10%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(45deg, #3b82f6, #60a5fa);
+            border-radius: 70% 30% 60% 40% / 40% 60% 30% 70%;
+            opacity: 0.05;
+            animation: drift 25s infinite alternate-reverse ease-in-out;
+        }
+
+        @keyframes drift {
+            from {
+                transform: translate(0, 0) rotate(0deg);
+            }
+
+            to {
+                transform: translate(50px, 30px) rotate(10deg);
+            }
+        }
+
+        .navbar {
+            padding: 1.5rem 0;
+            background: transparent !important;
+            transition: all 0.3s ease;
+        }
+
+        .navbar.scrolled {
+            background: rgba(255, 255, 255, 0.9) !important;
+            backdrop-filter: blur(10px);
+            padding: 1rem 0;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .navbar-brand {
+            font-family: var(--font-heading);
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--primary) !important;
+            letter-spacing: -0.02em;
+        }
+
+        .nav-link {
+            font-weight: 600;
+            color: var(--dark) !important;
+            margin: 0 1rem;
+            opacity: 0.8;
+            transition: 0.3s;
+        }
+
+        .nav-link:hover {
+            opacity: 1;
+            color: var(--primary) !important;
+        }
+
+        .profile-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 2.5rem;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            margin-bottom: 3rem;
+        }
+
+        .user-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 20px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-heading);
+            font-weight: 700;
+            font-size: 2rem;
+            box-shadow: 0 10px 20px rgba(30, 58, 138, 0.2);
+        }
+
+        .issue-card {
+            background: var(--white);
+            border-radius: 20px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+            transition: all 0.3s ease;
+            height: 100%;
+            overflow: hidden;
+            padding: 1.5rem;
+        }
+
+        .issue-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+
+        .status-badge {
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 6px 14px;
+            border-radius: 100px;
+            text-transform: uppercase;
+        }
+
+        .bg-premium-blue {
+            background: rgba(30, 58, 138, 0.1);
+            color: var(--primary);
+        }
+
+        .bg-premium-orange {
+            background: rgba(255, 152, 0, 0.1);
+            color: #f57c00;
+        }
+
+        .bg-premium-green {
+            background: rgba(40, 167, 69, 0.1);
+            color: #1e7e34;
+        }
+
+        .section-title {
+            font-family: var(--font-heading);
+            font-weight: 700;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::after {
+            content: '';
+            height: 2px;
+            flex-grow: 1;
+            background: linear-gradient(to right, rgba(30, 58, 138, 0.2), transparent);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-curves">
+        <div class="bg-shape-1"></div>
+        <div class="bg-shape-2"></div>
+    </div>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="/">COMMUNITY<span>.</span></a>
+            <div class="navbar" id="navMain">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+                    {% if user.is_staff or user.is_superuser or user.role == 'admin' %}
+                    <li class="nav-item"><a class="nav-link" href="/admin-dashboard/">Dashboard</a></li>
+                    {% endif %}
+                    <li class="nav-item"><a class="nav-link fw-bold" href="/profile/">{{ user.username }}</a></li>
+                    <li class="nav-item ms-lg-3"><a href="/logout/"
+                            class="btn btn-sm btn-outline-danger px-4 py-2 rounded-pill">Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <main class="container my-5">
+        <div class="profile-card d-flex flex-column flex-md-row align-items-center gap-4">
+            <div class="user-avatar">{{ user.username|make_list|first|upper }}</div>
+            <div class="text-center text-md-start">
+                <h1 class="fw-bold mb-1" style="font-family:var(--font-heading);">{{ user.username }}</h1>
+                <p class="text-muted mb-0">{{ user.email }}</p>
+            </div>
+            <div class="ms-md-auto">
+                <a href="/report-issue/" class="btn shadow-sm text-white rounded-pill px-4 py-2"
+                    style="background:linear-gradient(135deg,var(--primary),var(--secondary)); text-decoration:none; font-weight:700;">+
+                    Report Issue</a>
+            </div>
+        </div>
+        <section>
+            <h3 class="section-title">My Reported Issues</h3>
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                {% for issue in issues %}
+                <div class="col">
+                    <div class="issue-card d-flex flex-column">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div>
+                                <h5 class="fw-bold mb-1 text-truncate" style="max-width:150px;">{{ issue.title }}</h5>
+                                <div class="text-muted small text-uppercase fw-bold">{{ issue.get_category_display }}
+                                </div>
+                            </div>
+                            {% if issue.status == "Open" %}
+                            <span class="status-badge bg-premium-blue">Open</span>
+                            {% elif issue.status == "In Progress" %}
+                            <span class="status-badge bg-premium-orange">In Progress</span>
+                            {% else %}
+                            <span class="status-badge bg-premium-green">Closed</span>
+                            {% endif %}
+                        </div>
+                        <p class="text-muted small mb-4 flex-grow-1">{{ issue.description|truncatewords:20 }}</p>
+                        <div class="d-flex justify-content-between align-items-center mt-auto border-top pt-3">
+                            <span class="text-muted extra-small">{{ issue.created_at|date:"M d, Y" }}</span>
+                            <a href="/issue/{{ issue.id }}/" class="btn btn-sm btn-outline-dark rounded-pill px-3">View
+                                Details</a>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12 py-5 text-center bg-white rounded-4 shadow-sm border border-dashed">
+                    <h5 class="fw-bold text-muted">No reports yet</h5>
+                    <a href="/report-issue/" class="btn text-white rounded-pill px-4 py-2 mt-3"
+                        style="background:linear-gradient(135deg,var(--primary),var(--secondary)); text-decoration:none; font-weight:700;">Submit
+                        Issue</a>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Register Service Worker for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').then(reg => {
+                    console.log('SW Registered!', reg);
+                }).catch(err => {
+                    console.log('SW Registration Failed!', err);
+                });
+            });
+        }
+    </script>
+</body>
+
+</html>

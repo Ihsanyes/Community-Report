@@ -3,6 +3,7 @@ from django.contrib.auth import login, authenticate,logout
 from django.contrib import messages
 from .models import CustomUser, IssueReport
 from .permission import login_required, admin_required
+from django.utils import timezone
 
 def signup(request):
     if request.method == "POST":
@@ -74,8 +75,12 @@ def logout_view(request):
 
 
 def home(request):
-    #oakgdpfokgaodkg
     return render(request, 'userapp/home.html')
+
+@login_required
+def profile(request):
+    issues = IssueReport.objects.filter(user=request.user).order_by('-created_at')
+    return render(request, 'userapp/profile.html', {'issues': issues})
 
 @login_required
 def report_issue(request):
@@ -158,6 +163,9 @@ def admin_dashboard(request):
         "open_count": IssueReport.objects.filter(status="Open").count(),
         "in_progress": IssueReport.objects.filter(status="In Progress").count(),
         "closed": IssueReport.objects.filter(status="Closed").count(),
+        # "dept_name": request.user.get_department_display() if request.user.department else "",
+        "now": timezone.now()
+
     }
 
     return render(request, 'userapp/admin_dashboard.html', context)
@@ -189,3 +197,8 @@ def update_issue_status(request, id):
     
 def issue_success(request):
     return render(request, "userapp/issue_success.html")
+
+@login_required
+def user_reports(request):
+    issues = IssueReport.objects.filter(user=request.user).order_by("-created_at")
+    return render(request, "userapp/user_reports.html", {"issues": issues})

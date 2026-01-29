@@ -12,5 +12,7 @@ urlpatterns = [
     path('admin-dashboard/', views.admin_dashboard, name='admin_dashboard'),
     path("issue/<int:id>/", views.issue_detail, name="issue-detail"),
     path("issue/<int:id>/update-status/", views.update_issue_status, name="update-issue-status"),
-    path("issue-success/", views.issue_success, name="issue-success")
+    path("issue-success/", views.issue_success, name="issue-success"),
+    # path("my-reports/", views.user_reports, name="user-reports"),
+    path('profile/', views.profile, name='profile'),
 ]

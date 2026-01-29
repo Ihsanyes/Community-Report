@@ -1,192 +1,354 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Report an Issue</title>
-
-    <!-- Bootstrap -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Report an Issue - Community</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Outfit:wght@700&display=swap"
+        rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Leaflet Map CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
-
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <style>
+        :root {
+            --primary: #1e3a8a;
+            --secondary: #3b82f6;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --white: #ffffff;
+            --font-main: 'Inter', sans-serif;
+            --font-heading: 'Outfit', sans-serif;
+        }
+
         body {
-            background: #f7f9fc;
+            font-family: var(--font-main);
+            color: var(--dark);
+            background-color: var(--white);
+            overflow-x: hidden;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
         }
+
+        .bg-curves {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .bg-shape-1 {
+            position: absolute;
+            top: -20%;
+            right: -10%;
+            width: 60%;
+            height: 120%;
+            background: linear-gradient(135deg, #1e3a8a, #1d4ed8);
+            border-radius: 40% 60% 30% 70% / 60% 30% 70% 40%;
+            opacity: 0.08;
+            animation: drift 20s infinite alternate ease-in-out;
+        }
+
+        .bg-shape-2 {
+            position: absolute;
+            bottom: -30%;
+            left: -10%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(45deg, #3b82f6, #60a5fa);
+            border-radius: 70% 30% 60% 40% / 40% 60% 30% 70%;
+            opacity: 0.05;
+            animation: drift 25s infinite alternate-reverse ease-in-out;
+        }
+
+        @keyframes drift {
+            from {
+                transform: translate(0, 0) rotate(0deg);
+            }
+
+            to {
+                transform: translate(50px, 30px) rotate(10deg);
+            }
+        }
+
+        .navbar {
+            padding: 1.5rem 0;
+            background: transparent !important;
+            transition: all 0.3s ease;
+        }
+
+        .navbar.scrolled {
+            background: rgba(255, 255, 255, 0.9) !important;
+            backdrop-filter: blur(10px);
+            padding: 1rem 0;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .navbar-brand {
+            font-family: var(--font-heading);
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--primary) !important;
+            letter-spacing: -0.02em;
+        }
+
+        .nav-link {
+            font-weight: 600;
+            color: var(--dark) !important;
+            margin: 0 1rem;
+            opacity: 0.8;
+            transition: 0.3s;
+        }
+
         .report-card {
-            max-width: 650px;
-            margin: 30px auto;
-            background: #fff;
-            padding: 25px;
-            border-radius: 18px;
-            box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 3rem;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            margin: 2rem auto;
+            max-width: 800px;
+            animation: popIn 0.5s ease-out;
         }
-        .form-label { font-weight: 600; }
-        #map {
-            height: 260px;
+
+        @keyframes popIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-label {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .form-control,
+        .form-select {
             border-radius: 12px;
-            border: 1px solid #ddd;
+            padding: 0.75rem 1rem;
+            border: 1px solid #e2e8f0;
+            background: #f8fafc;
+            transition: all 0.2s;
+        }
+
+        .form-control:focus {
+            background: #fff;
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+
+        #map {
+            height: 300px;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 1.5rem;
+        }
+
+        .upload-area {
+            border: 2px dashed #cbd5e1;
+            border-radius: 16px;
+            background: #f8fafc;
+            padding: 2rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .upload-area:hover {
+            border-color: var(--secondary);
+            background: #f1f5f9;
+        }
+
+        .btn-premium {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 1rem;
+            font-weight: 700;
+            width: 100%;
+            transition: all 0.3s;
+            box-shadow: 0 10px 20px rgba(30, 58, 138, 0.2);
+        }
+
+        .btn-premium:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(30, 58, 138, 0.3);
+            color: white;
         }
     </style>
 </head>
 
 <body>
-
-<nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
-    <div class="container">
-        <a class="navbar-brand" href="/">Community</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsMain" aria-controls="navbarsMain" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <div class="collapse navbar-collapse" id="navbarsMain">
-            <ul class="navbar-nav ms-auto">
-                {% if request.user.is_authenticated %}
-                    <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
-                    {% if request.user.is_staff or request.user.is_superuser%}
-                    <li class="nav-item"><a class="nav-link" href="/admin-dashboard/">Dashboard</a></li>
-                    {% endif %}
-                    <li class="nav-item"><a class="nav-link" href="#">{{ request.user.username }}</a></li>
-                    <a href="/logout/" class="btn btn-outline-secondary py-2 px-3">Logout</a>
-                {% else %}
-                    <li class="nav-item"><a class="nav-link" href="/signup/">Sign up</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/login/">Log in</a></li>
-                {% endif %}
-            </ul>
-        </div>
+    <div class="bg-curves">
+        <div class="bg-shape-1"></div>
+        <div class="bg-shape-2"></div>
     </div>
-</nav>
-
-<div class="report-card">
-
-    <h3 class="text-center mb-3">📍 Report an Issue</h3>
-    <p class="text-center text-muted mb-4">Help us identify and fix problems in your community</p>
-
-    <form method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-
-        <!-- Title -->
-        <div class="mb-3">
-            <label class="form-label">Issue Title</label>
-            <input type="text" name="title" class="form-control" required>
-        </div>
-
-        <!-- Category -->
-        <div class="mb-3">
-            <label class="form-label">Category</label>
-            <select name="category" class="form-select">
-                <option value="">-- Select a category --</option>
-                <option value="road issue">Road Issue</option>
-                <option value="water supply">Water Supply</option>
-                <option value="electricity">Electricity</option>
-                <option value="sanitation">Sanitation</option>
-                <option value="other">Other</option>
-            </select>
-        </div>
-
-        <!-- Description -->
-        <div class="mb-3">
-            <label class="form-label">Description</label>
-            <textarea name="description" class="form-control" rows="3" required></textarea>
-        </div>
-
-        <!-- Location fields -->
-        <h5 class="text-primary mt-4">📌 Location Details</h5>
-
-        <div class="mb-3">
-            <label class="form-label">Address</label>
-            <input type="text" name="address" id="address" class="form-control">
-        </div>
-
-        <div class="row">
-            <div class="col-md-4 mb-3">
-                <label class="form-label">Country</label>
-                <input type="text" name="country" id="country" class="form-control">
-            </div>
-
-            <div class="col-md-4 mb-3">
-                <label class="form-label">State</label>
-                <input type="text" name="state" id="state" class="form-control">
-            </div>
-
-            <div class="col-md-4 mb-3">
-                <label class="form-label">City</label>
-                <input type="text" name="city" id="city" class="form-control">
+    <nav class="navbar navbar-expand-lg">
+        <div class="container"><a class="navbar-brand" href="/">COMMUNITY<span>.</span></a>
+            <div class="collapse navbar-collapse" id="navMain">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+                    <li class="nav-item"><a class="nav-link fw-bold" href="/profile/">{{ user.username }}</a></li>
+                </ul>
             </div>
         </div>
-
-        <div class="mb-3">
-            <label class="form-label">Landmark</label>
-            <input type="text" name="landmark" class="form-control">
+    </nav>
+    <main class="container">
+        <div class="report-card">
+            <div class="text-center mb-5">
+                <h1 style="font-family:var(--font-heading); font-weight:800; color:var(--primary);">Report a Problem
+                </h1>
+                <p class="text-muted">Help us build a better neighborhood together.</p>
+            </div>
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="row g-4 mb-4">
+                    <div class="col-md-6">
+                        <label class="form-label">Title</label>
+                        <input type="text" name="title" class="form-control" placeholder="What's the issue?" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Category</label>
+                        <select name="category" class="form-select" required>
+                            <option value="">Select Category</option>
+                            <option value="pwd">PWD / Road Issue</option>
+                            <option value="water">Water Authority</option>
+                            <option value="kseb">KSEB / Electricity</option>
+                            <option value="police">Police Station</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label">Details</label>
+                    <textarea name="description" class="form-control" rows="4"
+                        placeholder="Describe the problem in detail..." required></textarea>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label">Location</label>
+                    <div class="input-group mb-3">
+                        <input type="text" name="address" id="address" class="form-control"
+                            placeholder="Address or Landmark">
+                        <button class="btn btn-outline-primary rounded-end-pill px-4" type="button"
+                            id="btn-current-location">Use GPS</button>
+                    </div>
+                    <div class="input-group mb-3">
+                        <input type="text" name="landmark" id="landmark" class="form-control" placeholder="Landmark">
+                    </div>
+                    <div id="map"></div>
+                    <input type="hidden" name="latitude" id="latitude">
+                    <input type="hidden" name="longitude" id="longitude">
+                    <div style="display:none;">
+                        <input type="text" name="country" id="country">
+                        <input type="text" name="state" id="state">
+                        <input type="text" name="city" id="city">
+                    </div>
+                </div>
+                <div class="mb-5">
+                    <label class="form-label">Photo Evidence</label>
+                    <div class="upload-area text-center" id="upload-area">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor"
+                            class="text-muted mb-2" viewBox="0 0 16 16">
+                            <path d="M10.5 8.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z" />
+                            <path
+                                d="M2 4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-1.172a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 9.172 2H6.828a2 2 0 0 0-1.414.586l-.828.828A2 2 0 0 1 3.172 4H2zm.5 2a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1zm9 2.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0z" />
+                        </svg>
+                        <p class="mb-0 text-muted small" id="file-preview">Click here to upload a photo</p>
+                        <input type="file" name="image" id="image-input" class="d-none" accept="image/*">
+                    </div>
+                </div>
+                <button type="submit" class="btn-premium">Submit Report</button>
+            </form>
         </div>
+    </main>
+    <footer class="mt-5 py-4 text-center text-muted small">© 2023-2024 Community Platform</footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+        const uploadArea = document.getElementById('upload-area');
+        const imageInput = document.getElementById('image-input');
+        const filePreview = document.getElementById('file-preview');
+        uploadArea.addEventListener('click', () => imageInput.click());
+        imageInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) filePreview.textContent = `Selected: ${e.target.files[0].name}`;
+        });
+        // Map Initialization
+        var map = L.map('map').setView([10.1632, 76.6413], 13);
+        L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', { maxZoom: 20, subdomains: ['mt0', 'mt1', 'mt2', 'mt3'] }).addTo(map);
+        let marker;
 
-        <!-- Map -->
-        <label class="form-label">Pick Location on Map (optional)</label>
-        <div id="map" class="mb-3"></div>
+        // Function to update marker and form values
+        async function updateLocation(lat, lng) {
+            if (marker) map.removeLayer(marker);
+            marker = L.marker([lat, lng]).addTo(map);
+            document.getElementById("latitude").value = lat;
+            document.getElementById("longitude").value = lng;
 
-        <!-- Hidden lat/lng -->
-        <input type="hidden" name="latitude" id="latitude">
-        <input type="hidden" name="longitude" id="longitude">
-
-        <!-- Submit -->
-        <button class="btn btn-primary w-100 py-2 mt-2">Submit Report</button>
-
-    </form>
-
-    <a href="/" class="d-block text-center mt-3 text-decoration-none">Back to Home</a>
-</div>
-
-<!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-<!-- Leaflet JS -->
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-
-<script>
-    var map = L.map('map').setView([10.1632, 76.6413], 10);
-
-    // ✅ SATELLITE MAP (Google)
-    L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
-        maxZoom: 20,
-        subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
-    }).addTo(map);
-
-    let marker;
-
-    // On map click
-    map.on('click', async function (e) {
-        let lat = e.latlng.lat;
-        let lng = e.latlng.lng;
-
-        if (marker) map.removeLayer(marker);
-        marker = L.marker([lat, lng]).addTo(map);
-
-        document.getElementById("latitude").value = lat;
-        document.getElementById("longitude").value = lng;
-
-        // ✅ Reverse Geocoding (Address auto-fill)
-        let url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`;
-
-        let response = await fetch(url);
-        let data = await response.json();
-
-        if (data.address) {
-            document.getElementById("address").value = data.display_name || '';
-            document.getElementById("country").value = data.address.country || '';
-            document.getElementById("state").value = data.address.state || '';
-            document.getElementById("city").value =
-                data.address.city ||
-                data.address.town ||
-                data.address.village || '';
+            let url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`;
+            try {
+                let response = await fetch(url);
+                let data = await response.json();
+                if (data.address) {
+                    document.getElementById("address").value = data.display_name || '';
+                    document.getElementById("country").value = data.address.country || '';
+                    document.getElementById("state").value = data.address.state || '';
+                    document.getElementById("city").value = data.address.city || data.address.town || data.address.village || '';
+                }
+            } catch (err) { console.error(err); }
         }
-    });
-</script>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+        // Auto-locate on load
+        window.onload = function () {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition((pos) => {
+                    const lat = pos.coords.latitude;
+                    const lng = pos.coords.longitude;
+                    map.setView([lat, lng], 15);
+                    updateLocation(lat, lng);
+                }, (err) => {
+                    console.warn("Auto-location failed:", err.message);
+                }, { enableHighAccuracy: true });
+            }
+        };
 
+        // Map click listener
+        map.on('click', (e) => updateLocation(e.latlng.lat, e.latlng.lng));
+
+        // Manual GPS Button
+        document.getElementById('btn-current-location').addEventListener('click', function () {
+            if (navigator.geolocation) {
+                this.innerHTML = 'Locating...';
+                navigator.geolocation.getCurrentPosition((pos) => {
+                    const lat = pos.coords.latitude;
+                    const lng = pos.coords.longitude;
+                    map.setView([lat, lng], 15);
+                    updateLocation(lat, lng);
+                    this.innerHTML = 'Use GPS';
+                }, (err) => {
+                    alert("Error: " + err.message);
+                    this.innerHTML = 'Use GPS';
+                }, { enableHighAccuracy: true });
+            } else {
+                alert("Geolocation is not supported by your browser.");
+            }
+        });
+    </script>
 </body>
+
 </html>
